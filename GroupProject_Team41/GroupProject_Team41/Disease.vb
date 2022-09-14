@@ -1,24 +1,22 @@
-﻿Option Strict On
+Option Strict On
 Option Explicit On
 Option Infer Off
 Public MustInherit Class Disease
-    Private _Name As String  'Redim all the arrays and fix the constructors
+    Private _Name As String
     Private _NumTests() As Integer
     Private _Population() As Integer
     Private _NumInfected() As Integer
-    'rivate _NumSurvived As Integer
     Private _NumDied() As Integer
     Private _TypeOfDisease As String
-    Public Sub New(name As String, nP As Integer, nT As Integer, nA As Integer, nD As Integer, t As String)
+    
+    'constructor
+    Public Sub New(name As String, t As String, size As Integer)
         _Name = name
-        _Population = nP
-        _NumTests = nT
-        _NumInfected = nA
-        '_NumSurvived = nS
-        _NumDied = nD
+        ReDim _NumTests(size)
+        ReDim _NumDied(size)
+        ReDim _NumInfected(size)
+        ReDim _Population(size)
         _TypeOfDisease = t
-
-
     End Sub
     Public Property name() As String
         Get
@@ -71,22 +69,48 @@ Public MustInherit Class Disease
             _TypeOfDisease = value
         End Set
     End Property
+    
+    'general methods
     Public Overridable Function AvePeopleInfected() As Double
         Dim average As Double
         average = (NumInfected / population) * 100
         Return average
     End Function
 
-    Public Overridable Function infectionRate() As Double
-        Return (NumInfected / population) * 100
-    End Function
+     Public Overridable Function infectionRate(size As Integer) As Double
+        Dim ave, totalinf As Double
 
+        For i As Integer = 1 To _NumInfected.Length - 1
+            totalinf += NumInfected(i)
+            ave += totalinf / population(i)
+        Next i
+
+        Return CDbl(Format(ave, "0.###"))
+    End Function
 
     Public Overridable Function DeathRate() As Double
         Return (numdied / NumInfected) * 100
     End Function
-    Public Overridable Function yearEval() As String
 
+   Public Overridable Function yearEval(size As Integer) As String
+        Dim max, max1 As Double
+        Dim trend1, trend2 As String
+        max = numdied(1)
+        max1 = NumInfected(1)
+        If max < numdied(size) Then
+            trend1 = "Increasing"
+        Else
+            trend1 = "Decreasing"
+        End If
+        If max1 < NumInfected(size) Then
+            trend2 = "Increasing"
+        Else
+            trend2 = "Decreasing"
+        End If
+
+
+        Return "Death Rate:" & trend1 & Environment.NewLine _
+           & "Infection Rate:" & trend2
     End Function
 
 
